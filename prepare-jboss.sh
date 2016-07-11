@@ -9,7 +9,7 @@ while getopts ":z:u:sc:d" opt; do
             ;;
         u)
 	    INSTALL_PATH=$OPTARG
-            EAP_HOME="$INSTALL_PATH/jboss-eap-7.0"
+            EAP_HOME="$INSTALL_PATH"
             ;;
         s)
             SECURED=true
@@ -45,11 +45,11 @@ function throwerr {
 }
 
 function verifyEnvironmentVariables() {
-    if [ -z "$INSTALLATION_ZIP_PATH"]; then
+    if [ -z "$INSTALLATION_ZIP_PATH" ]; then
         throwerr "Name of EAP zip is not defined!"
     fi
 
-    if [ -z "$INSTALL_PATH"]; then
+    if [ -z "$INSTALL_PATH" ]; then
         throwerr "Name of unzipped EAP folder is not defined!"
     fi
 }
@@ -60,8 +60,12 @@ function removePreviouslyUnzippedInstallation() {
 }
 
 function unzipEAP() {
-   unzip "$INSTALLATION_ZIP_PATH" -d "$INSTALL_PATH"
-   printlog "EAP unzipped"
+   main_folder=$(unzip -l "$INSTALLATION_ZIP_PATH" | head -n 4 | tail -n 1 | awk '{print $4}')
+   printlog "Main in archive folder in archive is '$main_folder'"
+   unzip -q "$INSTALLATION_ZIP_PATH" -d "$INSTALL_PATH"
+   printlog "EAP unzipped in '$INSTALL_PATH/$main_folder'!"
+   printlog "Moving files from '$INSTALL_PATH/$main_folder*' to '$INSTALL_PATH'"
+   mv "$INSTALL_PATH"/$main_folder* "$INSTALL_PATH"
 }
 
 function unsecureConfigurationFile() {
