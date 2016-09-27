@@ -81,11 +81,12 @@ function unsecureServer() {
 #./bin/jboss-cli.sh -c --commands="/core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm),:reload"
 
 function replaceOldHALModule() {
-   old_console_jar_name=$(ls "$PATH_TO_CONSOLE/*.jar" | xargs -n 1 basename)
+   printlog "Replacing HAL module in slot '$PATH_TO_CONSOLE'!"
+   old_console_jar_name=$(ls $PATH_TO_CONSOLE/*.jar | xargs -n 1 basename)
    new_console_jar_name=$(basename "$NEW_HAL_JAR_PATH")
-   printlog "Replacing old console \'$old_console_jar_name\' by \'$new_console_jar_name\'!"
+   printlog "Replacing old console '$old_console_jar_name' by '$new_console_jar_name'!"
 
-   rm "$PATH_TO_CONSOLE/*.jar"
+   rm $PATH_TO_CONSOLE/*.jar
    cp "$NEW_HAL_JAR_PATH" "$PATH_TO_CONSOLE/$new_console_jar_name"
 
    #replace name in module.xml so the new console loads
