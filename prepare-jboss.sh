@@ -1,8 +1,9 @@
 #!/bin/bash
+DO_NOT_START=false
 SECURED=false
 START_IN_DOMAIN=false
 
-while getopts ":z:u:sc:d" opt; do
+while getopts ":z:u:sc:dj" opt; do
     case $opt in
         z)
             INSTALLATION_ZIP_PATH=$OPTARG
@@ -20,6 +21,9 @@ while getopts ":z:u:sc:d" opt; do
             ;;
         d)
             START_IN_DOMAIN=true
+            ;;
+        j)
+            DO_NOT_START=true
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -110,11 +114,13 @@ if [ -n "$NEW_HAL_JAR_PATH" ]; then
 fi
 
 #run EAP
-if [ "$START_IN_DOMAIN" = true ]; then
-    printlog "Starting EAP in domain mode!"
-    sh "$EAP_HOME/bin/domain.sh"
-else
-    printlog "Starting EAP in standalone mode!"
-    sh "$EAP_HOME/bin/standalone.sh" -c standalone-full-ha.xml
+if [ "$DO_NOT_START" = false ]; then
+    if [ "$START_IN_DOMAIN" = true ]; then
+        printlog "Starting EAP in domain mode!"
+        sh "$EAP_HOME/bin/domain.sh"
+    else
+        printlog "Starting EAP in standalone mode!"
+        sh "$EAP_HOME/bin/standalone.sh" -c standalone-full-ha.xml
+    fi
 fi
 
