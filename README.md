@@ -6,5 +6,5 @@ Simple launch script simplyfing repeated start of Wildfly/RedHat EAP.
  * `-z <PATH>` – path to Wildfly installation zip file
  * `-u <PATH>` – installation path
  * `[-s]` – if specified, server will be kept secured
- * `[-c <PATH>]` – path to HAL console module whcih will be used to replace default one
+ * `[-c <PATH>]` – path to HAL console module which will be used to replace default one
  * `[-d]` – if specified, server will be started in domain mode
