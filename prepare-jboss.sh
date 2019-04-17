@@ -79,6 +79,13 @@ function unzipEAP() {
 function waitForServerStarted() {
     local CHECK_TIMEOUT=$1;
     local SERVER_STATE
+    local server_state_cmd
+
+    if test ${START_IN_DOMAIN} = true; then
+        server_state_cmd="/host=master/server=server-one:read-attribute(name=server-state)"
+    else
+        server_state_cmd=":read-attribute(name=server-state)"
+    fi    
 
     if [[ $1 =~ ^[0-9]+$ ]]; then
         printlog "${FUNCNAME[0]}: Checking if server is running with timeout of $1 s.";
@@ -90,7 +97,7 @@ function waitForServerStarted() {
     while [[ $CHECK_TIMEOUT -ne 0 ]]
     do
         sleep 1;
-        SERVER_STATE=$(runCliCommand ':read-attribute(name=server-state)' | grep result);
+        SERVER_STATE=$(runCliCommand "${server_state_cmd}" | grep result);
         if [[ -z $SERVER_STATE ]]; then
             SERVER_STATE="stopped";
         else
@@ -151,6 +158,7 @@ function replaceOldHALModule() {
 
 function startServer() {
     local silent_output="${1:-false}"
+    local standalone_conf_file="standalone-full-ha.xml"
 
     if [ "$START_IN_DOMAIN" = true ]; then
         printlog "Starting EAP in domain mode!"
@@ -162,9 +170,9 @@ function startServer() {
     else
         printlog "Starting EAP in standalone mode!"
         if test ${silent_output} = true; then
-            sh "$EAP_HOME/bin/standalone.sh" -c standalone-full-ha.xml > /dev/null
+            sh "$EAP_HOME/bin/standalone.sh" -c ${standalone_conf_file} > /dev/null
         else    
-            sh "$EAP_HOME/bin/standalone.sh" -c standalone-full-ha.xml
+            sh "$EAP_HOME/bin/standalone.sh" -c ${standalone_conf_file}
         fi    
     fi
 }
